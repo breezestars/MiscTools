@@ -1,0 +1,23 @@
+#!/bin/bash
+
+function usage-command {
+  echo "Usage:"
+  echo "  docker-if <container> <interface>"
+  echo "      Move interface to container and set link up "
+}
+
+if [ $# != 2 ]
+then
+  usage-command
+  exit 0
+fi
+
+if ! sudo test -e "/var/run/netns/$1" 
+then
+  echo "Didn't found $1 in netns, please exectue docker-netns to create one"
+  exit 1
+fi
+
+sudo ip link set dev $2 netns $1
+sudo ip netns exec $1 ip link set dev $2 up
+

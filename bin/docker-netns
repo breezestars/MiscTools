@@ -1,0 +1,18 @@
+#!/bin/bash
+
+function usage-command {
+  echo "Usage:"
+  echo "  docker-netns <container>"
+  echo "      Create a link in network namespace."
+}
+
+if [ $# != 1 ]
+then
+  usage-command
+  exit 0
+fi
+
+CONTAINER_PID=$(docker inspect -f '{{.State.Pid}}' $1)
+sudo mkdir -p /var/run/netns/
+sudo rm /var/run/netns/$1 2> /dev/null
+sudo ln -sfT /proc/$CONTAINER_PID/ns/net /var/run/netns/$1
